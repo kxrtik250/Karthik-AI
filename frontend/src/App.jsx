@@ -1,36 +1,105 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Sidebar from "./components/layout/Sidebar";
+import ChatView from "./components/chat/ChatView";
+import DocumentsView from "./components/documents/DocumentsView";
+import { useConversations } from "./hooks/useConversations";
+import { useChat } from "./hooks/useChat";
+import { useDocuments } from "./hooks/useDocuments";
 import "./App.css";
 
-function App() {
-  const [backendStatus, setBackendStatus] = useState("checking...");
+export default function App() {
+  const [activeView, setActiveView] = useState("chat");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/health")
-      .then((res) => res.json())
-      .then((data) => setBackendStatus(data.status))
-      .catch(() => setBackendStatus("unreachable"));
-  }, []);
+  // Conversations state
+  const {
+    conversations,
+    activeConversationId,
+    setActiveConversationId,
+    startNewChat,
+    selectConversation,
+    deleteConversation,
+    loadConversations,
+  } = useConversations();
+
+  // Chat state
+  const {
+    messages,
+    isLoading: isChatLoading,
+    error: chatError,
+    sendMessage,
+    clearError: clearChatError,
+  } = useChat(activeConversationId, (newConversationId) => {
+    setActiveConversationId(newConversationId);
+    loadConversations();
+  });
+
+  // Documents state
+  const {
+    documents,
+    isLoading: isDocsLoading,
+    isUploading: isDocsUploading,
+    isDeletingId: isDocDeletingId,
+    error: docsError,
+    uploadFile,
+    deleteDocument,
+    clearError: clearDocsError,
+  } = useDocuments();
+
+  const activeConversation = conversations.find((c) => c.id === activeConversationId);
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Karthik AI</h1>
-        <p className="subtitle">Personal AI Assistant</p>
+    <div className="app-layout">
+      {/* Mobile Top Bar */}
+      <header className="mobile-header">
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          onClick={() => setIsMobileSidebarOpen(true)}
+          aria-label="Open navigation menu"
+        >
+          ☰
+        </button>
+        <span className="mobile-brand">Karthik AI</span>
       </header>
-      <main className="app-main">
-        <div className="status-card">
-          <h2>System Status</h2>
-          <p>
-            Backend:{" "}
-            <span className={`status-badge ${backendStatus === "healthy" ? "green" : "red"}`}>
-              {backendStatus}
-            </span>
-          </p>
-        </div>
-        <p className="phase-note">Phase 1 — Foundation scaffold is running.</p>
+
+      {/* Sidebar */}
+      <Sidebar
+        activeView={activeView}
+        onSelectView={(view) => setActiveView(view)}
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        onSelectConversation={(id) => selectConversation(id)}
+        onNewChat={() => startNewChat()}
+        onDeleteConversation={(id) => deleteConversation(id)}
+        isOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
+      />
+
+      {/* Main Content Area */}
+      <main className="app-main-content">
+        {activeView === "chat" ? (
+          <ChatView
+            messages={messages}
+            isLoading={isChatLoading}
+            error={chatError}
+            onSendMessage={sendMessage}
+            activeConversation={activeConversation}
+            onClearError={clearChatError}
+          />
+        ) : (
+          <DocumentsView
+            documents={documents}
+            isLoading={isDocsLoading}
+            isUploading={isDocsUploading}
+            uploadError={docsError}
+            onUpload={uploadFile}
+            onDelete={deleteDocument}
+            isDeletingId={isDocDeletingId}
+            onClearError={clearDocsError}
+          />
+        )}
       </main>
     </div>
   );
 }
-
-export default App;
