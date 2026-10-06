@@ -1,0 +1,63 @@
+.app {
+  text-align: center;
+  padding: 2rem;
+}
+
+.app-header {
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.status-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem 2.5rem;
+  min-width: 300px;
+}
+
+.status-card h2 {
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  margin-bottom: 0.75rem;
+}
+
+.status-badge {
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.status-badge.green {
+  background: #065f46;
+  color: #6ee7b7;
+}
+
+.status-badge.red {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.phase-note {
+  color: #64748b;
+  font-size: 0.85rem;
+}
