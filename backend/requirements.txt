@@ -4,3 +4,10 @@ sqlalchemy[asyncio]
 asyncpg
 pydantic-settings
 python-dotenv
+alembic
+pypdf>=5.1.0
+python-docx>=1.1.2
+python-pptx>=1.0.2
+fastembed>=0.5.1
+pgvector>=0.3.6
+python-multipart>=0.0.9

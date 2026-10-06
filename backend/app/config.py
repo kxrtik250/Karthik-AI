@@ -1,6 +1,12 @@
 """Application configuration loaded from environment variables."""
 
+import os
+from pathlib import Path
 from pydantic_settings import BaseSettings
+
+# Base directories
+BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = BASE_DIR.parent
 
 
 class Settings(BaseSettings):
@@ -10,7 +16,18 @@ class Settings(BaseSettings):
     app_name: str = "Karthik AI"
     debug: bool = True
 
+    # Document storage configuration
+    upload_dir: str = str(PROJECT_ROOT / "uploads" / "documents")
+    max_file_size_mb: int = 25  # 25 MB max limit
+
+    # Embedding configuration
+    embedding_model_name: str = "BAAI/bge-small-en-v1.5"
+    embedding_dimension: int = 384
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 
 settings = Settings()
+
+# Ensure upload directory exists
+os.makedirs(settings.upload_dir, exist_ok=True)
