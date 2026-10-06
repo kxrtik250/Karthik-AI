@@ -17,6 +17,18 @@ from app.schemas.document import (
     DocumentDetailResponse,
     DocumentResponse,
 )
+from app.schemas.rag import (
+    RAGQueryRequest,
+    RAGQueryResponse,
+    SourceCitationResponse,
+)
+from app.schemas.conversation import (
+    ConversationListResponse,
+    ConversationResponse,
+    MessageResponse,
+    RAGChatRequest,
+    RAGChatResponse,
+)
 
 __all__ = [
     "ProfileCreate",
@@ -40,4 +52,12 @@ __all__ = [
     "DocumentResponse",
     "DocumentDetailResponse",
     "DocumentChunkResponse",
+    "RAGQueryRequest",
+    "RAGQueryResponse",
+    "SourceCitationResponse",
+    "ConversationListResponse",
+    "ConversationResponse",
+    "MessageResponse",
+    "RAGChatRequest",
+    "RAGChatResponse",
 ]

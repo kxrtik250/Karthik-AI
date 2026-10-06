@@ -12,13 +12,14 @@ from app.routers import (
     placements,
     profile,
     projects,
+    rag,
     skills,
 )
 
 app = FastAPI(
     title=settings.app_name,
-    version="0.3.0",
-    description="Personal AI Assistant — Phase 3 Document Ingestion & Storage",
+    version="0.4.0",
+    description="Personal AI Assistant — Phase 4 RAG Retrieval & Answer-Generation Layer",
 )
 
 # Allow the Vite dev server to call the API
@@ -39,3 +40,4 @@ app.include_router(certifications.router, prefix="/api")
 app.include_router(companies.router, prefix="/api")
 app.include_router(placements.router, prefix="/api")
 app.include_router(documents.router, prefix="/api")
+app.include_router(rag.router, prefix="/api")

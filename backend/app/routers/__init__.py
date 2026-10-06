@@ -6,6 +6,7 @@ from app.routers import (
     placements,
     profile,
     projects,
+    rag,
     skills,
 )
 
@@ -18,4 +19,5 @@ __all__ = [
     "companies",
     "placements",
     "documents",
+    "rag",
 ]

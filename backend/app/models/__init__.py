@@ -6,6 +6,7 @@ from app.models.certification import Certification
 from app.models.company import Company
 from app.models.placement import PlacementDrive
 from app.models.document import Document, DocumentChunk
+from app.models.conversation import Conversation, Message
 
 __all__ = [
     "Base",
@@ -18,4 +19,6 @@ __all__ = [
     "PlacementDrive",
     "Document",
     "DocumentChunk",
+    "Conversation",
+    "Message",
 ]

@@ -24,6 +24,15 @@ class Settings(BaseSettings):
     embedding_model_name: str = "BAAI/bge-small-en-v1.5"
     embedding_dimension: int = 384
 
+    # LLM configuration
+    llm_provider: str = "ollama"  # ollama, gemini (future)
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2:1b"
+
+    # RAG configuration (initial values, can be tuned with evaluation data)
+    rag_top_k: int = 5
+    rag_similarity_threshold: float = 0.50
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 
