@@ -66,7 +66,11 @@ export function useChat(activeConversationId, onConversationCreated) {
         const response = await chatRag(payload);
 
         // Replace or append assistant message
-        const assistantMsg = response.message;
+        const assistantMsg = {
+          ...response.message,
+          intent: response.intent,
+          sources_used: response.sources_used || [],
+        };
         setMessages((prev) => [...prev, assistantMsg]);
 
         // If this was a new conversation, notify parent

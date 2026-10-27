@@ -1,6 +1,6 @@
 import uuid
-from typing import Any, Dict, List
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Any, Dict, List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -82,9 +82,12 @@ async def query_rag(
             query=rag_res.query,
             answer=rag_res.answer,
             sources=citation_responses,
+            structured_sources=rag_res.structured_sources,
             model=rag_res.model,
             context_used=rag_res.context_used,
             grounded=rag_res.grounded,
+            intent=rag_res.intent,
+            sources_used=rag_res.sources_used,
         )
     except Exception as e:
         raise HTTPException(
@@ -146,13 +149,25 @@ async def chat_rag(
                 created_at=msg_entity.created_at,
             ),
             sources=citation_responses,
+            structured_sources=chat_res.get("structured_sources", []),
             model=chat_res["model"],
+            intent=chat_res.get("intent"),
+            sources_used=chat_res.get("sources_used", []),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Conversational RAG failed: {str(e)}",
         )
+
+
+@router.get("/context-summary", response_model=Dict[str, Any])
+async def get_context_summary(
+    query: Optional[str] = Query(None, description="Optional diagnostic query to evaluate routing, guards, and context retrieval"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Overview of available structured personal memory in PostgreSQL and query diagnostics."""
+    return await rag_service.evaluate_context_summary(db=db, query=query)
 
 
 @router.get("/conversations", response_model=List[ConversationListResponse])

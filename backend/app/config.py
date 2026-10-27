@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     """App settings. Values are read from environment variables or .env file."""
 
     database_url: str = "postgresql+asyncpg://karthik_ai:karthik_ai_dev@localhost:5432/karthik_ai_db"
+    test_database_url: str = "postgresql+asyncpg://karthik_ai:karthik_ai_dev@localhost:5432/karthik_ai_test"
+    testing: bool = False
     app_name: str = "Karthik AI"
     debug: bool = True
 
@@ -26,14 +28,14 @@ class Settings(BaseSettings):
 
     # LLM configuration
     llm_provider: str = "ollama"  # ollama, gemini (future)
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = "http://127.0.0.1:11434"
     ollama_model: str = "llama3.2:1b"
 
     # RAG configuration (initial values, can be tuned with evaluation data)
     rag_top_k: int = 5
     rag_similarity_threshold: float = 0.50
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {"env_file": (str(BASE_DIR / ".env"), ".env"), "extra": "ignore"}
 
 
 settings = Settings()

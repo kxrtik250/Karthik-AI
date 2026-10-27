@@ -46,4 +46,7 @@ class RAGChatResponse(BaseModel):
     conversation_id: uuid.UUID
     message: MessageResponse
     sources: List[SourceCitationResponse] = []
+    structured_sources: List[str] = []
     model: str
+    intent: Optional[str] = None
+    sources_used: List[str] = []

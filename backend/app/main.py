@@ -9,10 +9,12 @@ from app.routers import (
     companies,
     documents,
     health,
+    interview,
     placements,
     profile,
     projects,
     rag,
+    resume,
     skills,
 )
 
@@ -39,5 +41,7 @@ app.include_router(projects.router, prefix="/api")
 app.include_router(certifications.router, prefix="/api")
 app.include_router(companies.router, prefix="/api")
 app.include_router(placements.router, prefix="/api")
+app.include_router(interview.router, prefix="/api")
+app.include_router(resume.router, prefix="/api")
 app.include_router(documents.router, prefix="/api")
 app.include_router(rag.router, prefix="/api")

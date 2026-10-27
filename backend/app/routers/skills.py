@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,7 +22,7 @@ async def list_skills(
     query = select(Skill)
     if category:
         query = query.where(Skill.category == category)
-    query = query.order_by(Skill.name.asc())
+    query = query.order_by(Skill.category.asc().nullslast(), Skill.name.asc())
 
     result = await db.execute(query)
     return result.scalars().all()
@@ -42,6 +42,19 @@ async def create_skill(
                 detail="No profile exists. Please create a profile first before adding skills.",
             )
         target_profile_id = profile.id
+
+    # Case-insensitive duplicate check
+    existing_skill = await db.execute(
+        select(Skill).where(
+            Skill.profile_id == target_profile_id,
+            func.lower(Skill.name) == skill_in.name.lower(),
+        )
+    )
+    if existing_skill.scalars().first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Skill '{skill_in.name}' already exists in your profile.",
+        )
 
     skill_data = skill_in.model_dump()
     skill_data["profile_id"] = target_profile_id
@@ -76,6 +89,20 @@ async def update_skill(
         )
 
     update_data = skill_in.model_dump(exclude_unset=True)
+    if "name" in update_data and update_data["name"]:
+        conflict = await db.execute(
+            select(Skill).where(
+                Skill.profile_id == skill.profile_id,
+                Skill.id != skill_id,
+                func.lower(Skill.name) == update_data["name"].lower(),
+            )
+        )
+        if conflict.scalars().first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Another skill named '{update_data['name']}' already exists in your profile.",
+            )
+
     for field, value in update_data.items():
         setattr(skill, field, value)
 

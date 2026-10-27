@@ -13,7 +13,17 @@ export default function CitationModal({ citation, onClose }) {
 
   if (!citation) return null;
 
-  const scorePct = Math.round(citation.similarity_score * 100);
+  const hasScore =
+    typeof citation.similarity_score === "number" &&
+    Number.isFinite(citation.similarity_score) &&
+    citation.similarity_score > 0;
+  const scorePct = hasScore ? Math.round(citation.similarity_score * 100) : null;
+
+  const hasValidPage =
+    citation.page_number !== null &&
+    citation.page_number !== undefined &&
+    typeof citation.page_number === "number" &&
+    citation.page_number > 0;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -46,14 +56,16 @@ export default function CitationModal({ citation, onClose }) {
             <div className="meta-item">
               <span className="meta-label">Location:</span>
               <span className="meta-value">
-                {citation.page_number
+                {hasValidPage
                   ? `Page / Slide ${citation.page_number}`
                   : "Entire document / Section"}
               </span>
             </div>
             <div className="meta-item">
               <span className="meta-label">Relevance Match:</span>
-              <span className="meta-value score-highlight">{scorePct}%</span>
+              <span className="meta-value score-highlight">
+                {scorePct !== null ? `${scorePct}%` : "Document Reference"}
+              </span>
             </div>
             <div className="meta-item">
               <span className="meta-label">Document ID:</span>

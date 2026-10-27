@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -57,6 +57,19 @@ async def create_project(
             )
         target_profile_id = profile.id
 
+    # Case-insensitive duplicate check
+    existing_project = await db.execute(
+        select(Project).where(
+            Project.profile_id == target_profile_id,
+            func.lower(Project.name) == project_in.name.lower(),
+        )
+    )
+    if existing_project.scalars().first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Project '{project_in.name}' already exists in your profile.",
+        )
+
     project_data = project_in.model_dump()
     project_data["profile_id"] = target_profile_id
 
@@ -83,6 +96,28 @@ async def update_project(
         )
 
     update_data = project_in.model_dump(exclude_unset=True)
+    if "name" in update_data and update_data["name"]:
+        conflict = await db.execute(
+            select(Project).where(
+                Project.profile_id == project.profile_id,
+                Project.id != project_id,
+                func.lower(Project.name) == update_data["name"].lower(),
+            )
+        )
+        if conflict.scalars().first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Another project named '{update_data['name']}' already exists in your profile.",
+            )
+
+    new_start = update_data.get("start_date", project.start_date)
+    new_end = update_data.get("end_date", project.end_date)
+    if new_start and new_end and new_end < new_start:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Project end_date cannot be earlier than start_date.",
+        )
+
     for field, value in update_data.items():
         setattr(project, field, value)
 

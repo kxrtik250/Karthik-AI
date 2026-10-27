@@ -81,6 +81,30 @@ export default function Sidebar({
             <span className="nav-icon" aria-hidden="true">📁</span>
             <span>Knowledge Documents</span>
           </button>
+
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeView === "placements" ? "active" : ""}`}
+            onClick={() => {
+              onSelectView("placements");
+              onCloseMobile && onCloseMobile();
+            }}
+          >
+            <span className="nav-icon" aria-hidden="true">🎓</span>
+            <span>Placement Intelligence</span>
+          </button>
+
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeView === "profile" ? "active" : ""}`}
+            onClick={() => {
+              onSelectView("profile");
+              onCloseMobile && onCloseMobile();
+            }}
+          >
+            <span className="nav-icon" aria-hidden="true">👤</span>
+            <span>Profile & Portfolio</span>
+          </button>
         </nav>
 
         <div className="sidebar-conversations-section">

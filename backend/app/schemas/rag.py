@@ -17,7 +17,7 @@ class SourceCitationResponse(BaseModel):
     page_number: Optional[int] = None
     chunk_index: int
     snippet: str
-    similarity_score: float
+    similarity_score: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -26,6 +26,9 @@ class RAGQueryResponse(BaseModel):
     query: str
     answer: str
     sources: List[SourceCitationResponse]
+    structured_sources: List[str] = []
     model: str
     context_used: bool
     grounded: bool
+    intent: Optional[str] = None
+    sources_used: List[str] = []
